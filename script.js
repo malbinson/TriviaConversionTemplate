@@ -1,6 +1,12 @@
 
 //using jquery create document ready function to handle our "go" and 
 //check buttons + any future actions
+$(document).ready(() => {
+  $("#go").click(() => {
+    run();
+  })
+})
+
 
 //go get the data from the API based on difficulty selection
 function run() {
@@ -9,7 +15,7 @@ function run() {
     
     //this is good!  look at how this works:
     $.ajax({
-        url: 'https://opentdb.com/api.php?amount=10&difficulty=' + difficulty,
+        url: 'https://opentdb.com/api.php?amount=10&difficulty=',
         dataType: "json",
         success: process
     });
@@ -21,25 +27,39 @@ function run() {
 function process(data) {
     console.log(data)
 
-    var questions = data.results;
+    var q = data.results;
     
     //using jquery get the output div and set it 
     //into a var called output
-    
+    var output = $("#output");
 
     //using array.map, write a block that outputs each
     //question, and inside of that, maps each answer choice, like:
 
-    var z = q.map( (question) => {
-
+    var z = q.map( (h,index) => {
         //append the question into the div + "<br>"
         //append the correct answer into the div + "<br>"
+        output.append(h.question + "<br>")
+        output.append(createRadio(index,h.correct_answer))
+        output.append(h.correct_answer + "<br>")
 
         //map again over the incorrect answers array
         //append each incorrect answer into the div + "<br>"
-
+        var zz = h.incorrect_answers.map((a) => {
+          output.append(createRadio(index,a));          
+          output.append(a + "<br>");
+        })
     })
     
+}
+
+// helper method to build & return the radio button elements
+function createRadio(qNum, answer) {
+  var radio = document.createElement("input");
+  radio.type = "radio"
+  radio.name = qNum;
+  radio.value = answer;
+  return radio;
 }
 
 // checks the users answers vs the correct answers - complete later
